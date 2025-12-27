@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>See what attracts attention on your listings — live</title>
+
+  <!-- Open Graph / LinkedIn -->
+  <meta property="og:title" content="See what attracts attention on your listings — live" />
+  <meta property="og:description" content="A small, privacy-first on-site widget that shows which listings and areas attract real visitor attention. No cookies. No tracking. Live on your site." />
+  <meta property="og:image" content="https://view.smaart-app.com/static/og-smaart-view.png" />
+  <meta property="og:url" content="https://view.smaart-app.com/get-code" />
+  <meta property="og:type" content="website" />
+
+  <link rel="icon" type="image/png" sizes="16x16" href="static/icon-house-16.png?v=4">
+  <link rel="icon" type="image/png" sizes="32x32" href="static/icon-house-32.png?v=4">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=8" />
+</head>
+
+<body>
+
+  <div class="container">
+    <h1 class="title">See what attracts attention on your listings — live</h1>
+
+    <p class="subtitle">
+      Fill in the details below to generate your embed code. You will receive one code, ready to be added to your website.
+    </p>
+    <p class="subtitle">
+      If someone else manages your site, you can simply forward the code.
+    </p>
+
+    <div id="formCard" class="form-card">
+      <div class="form-field">
+        <label>First Name *</label>
+        <input id="firstName" type="text" required />
+      </div>
+
+      <div class="form-field">
+        <label>Last Name *</label>
+        <input id="lastName" type="text" required />
+      </div>
+
+      <div class="form-field">
+        <label>Email *</label>
+        <input id="email" type="email" required />
+      </div>
+
+      <div class="form-field">
+        <label>Website Domain (e.g. realestate-patra.gr) *</label>
+        <input id="domain" type="text" required />
+      </div>
+
+      <p style="font-size:13px;color:#6b7280;margin-top:6px;">
+        No newsletters. No sales emails.
+      </p>
+
+      <button id="submitBtn" class="btn">Get embed code</button>
+    </div>
+
+    <div id="successCard" class="success-card" style="display:none;">
+      <h2 style="font-size:20px; font-weight:600; margin-bottom:10px;">
+        Your embed code is ready
+      </h2>
+      <p style="color:#6b7280; margin-bottom:12px;">
+        Copy this snippet and paste it before the closing <code>&lt;/body&gt;</code> tag on your website.
+      </p>
+
+      <div style="position:relative;">
+        <button id="copyBtn"
+          style="
+            position:absolute;
+            top:8px;
+            right:8px;
+            font-size:12px;
+            padding:6px 10px;
+            border-radius:6px;
+            border:1px solid #e5e7eb;
+            background:#fff;
+            cursor:pointer;
+          ">
+          Copy code
+        </button>
+
+        <pre id="embedCode" style="padding-top:28px;"></pre>
+      </div>
+
+      <p id="copyStatus" style="font-size:12px;color:#16a34a;margin-top:6px;display:none;">
+        Copied to clipboard ✓
+      </p>
+
+      <p style="margin-top:20px;">
+        Want to see how it looks?
+        <a id="openDemoLink" href="demo.html?v=8" class="link-primary">Open the interactive demo →</a>
+      </p>
+    </div>
+
+    <div class="footer">SMAart View • Free widget</div>
+  </div>
+
+  <script>
+    const API_BASE = "https://pulse-api.anna-fokidou.workers.dev";
+
+    const btn = document.getElementById("submitBtn");
+    const formCard = document.getElementById("formCard");
+    const successCard = document.getElementById("successCard");
+    const embedCodeEl = document.getElementById("embedCode");
+    const copyBtn = document.getElementById("copyBtn");
+    const copyStatus = document.getElementById("copyStatus");
+    const openDemoLink = document.getElementById("openDemoLink");
+
+    function sendEvent(payload) {
+      try {
+        fetch(API_BASE + "/events", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).catch(() => {});
+      } catch {}
+    }
+
+    sendEvent({
+      site_id: "self",
+      event_type: "page_view",
+      page_path: window.location.pathname || "/get-code",
+      listing_id: "",
+      area: "get-code"
+    });
+
+    function normalizeDomain(value) {
+      return value
+        .toLowerCase()
+        .replace(/^https?:\/\//, "")
+        .replace(/\/.*$/, "")
+        .trim();
+    }
+
+    btn.addEventListener("click", async () => {
+      if (btn.disabled) return;
+
+      sendEvent({
+        site_id: "self",
+        event_type: "click",
+        page_path: window.location.pathname || "/get-code",
+        listing_id: "generate_embed",
+        area: "get-code"
+      });
+
+      const first = document.getElementById("firstName").value.trim();
+      const last = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const domain = normalizeDomain(document.getElementById("domain").value);
+
+      if (!first || !last || !email || !domain) {
+        alert("Please fill all required fields.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Generating…";
+
+      try {
+        await fetch(API_BASE + "/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ first, last, email, domain })
+        });
+
+        await fetch(API_BASE + "/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ first, last, email, domain })
+        });
+
+        embedCodeEl.textContent =
+          '<script src="https://pulse-api.anna-fokidou.workers.dev/widget.js" data-site-id="' +
+          domain +
+          '"></' + 'script>';
+
+        formCard.style.display = "none";
+        successCard.style.display = "block";
+
+        sendEvent({
+          site_id: "self",
+          event_type: "success",
+          page_path: window.location.pathname || "/get-code",
+          listing_id: "embed_generated",
+          area: "get-code"
+        });
+
+      } catch {
+        alert("Something went wrong. Please try again.");
+        btn.disabled = false;
+        btn.textContent = "Get embed code";
+      }
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(embedCodeEl.textContent);
+        copyStatus.style.display = "block";
+        setTimeout(() => (copyStatus.style.display = "none"), 2000);
+      } catch {
+        alert("Could not copy to clipboard.");
+      }
+    });
+  </script>
+
+</body>
+</html>

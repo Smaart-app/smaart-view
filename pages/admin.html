@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SMAart View — Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+  />
+  <style>
+    :root {
+      --sp-blue: #007BFF;
+      --sp-bg: #f1f5f9;
+      --sp-card-bg: #ffffff;
+      --sp-text: #0f172a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #e0f2fe 0, #eef2ff 40%, #f8fafc 100%);
+      color: var(--sp-text);
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .wrap { width: 100%; max-width: 960px; }
+
+    .header { margin-bottom: 24px; }
+
+    .title {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .title span:first-child { color: #000000; }
+    .title span:nth-child(2) { color: var(--sp-blue); }
+
+    .subtitle {
+      margin-top: 6px;
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--sp-card-bg);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      border: 1px solid #e2e8f0;
+    }
+
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+
+    .card .value { font-size: 26px; font-weight: 600; }
+
+    .card .hint {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .table-card { margin-top: 8px; }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid #c4b5fd;
+      background: #eef2ff;
+      color: #4c1d95;
+    }
+
+    .table-wrap {
+      max-height: 420px;
+      overflow: auto;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+    thead {
+      background: #f8fafc;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    th {
+      font-weight: 500;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    tbody tr:nth-child(even) td { background: #f9fafb; }
+
+    .site-id {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+    }
+
+    .views { text-align: right; font-weight: 600; }
+
+    .status { font-size: 12px; margin-top: 6px; color: #64748b; }
+    .status strong { color: #0f172a; }
+
+    .error {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .token-hint { margin-top: 4px; font-size: 12px; color: #94a3b8; }
+
+    @media (max-width: 640px) {
+      .page { padding: 24px 12px; }
+      .title { font-size: 22px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="wrap">
+
+      <header class="header">
+        <div class="title">
+          <span>SMAart</span>
+          <span>View</span>
+          <span style="font-size:13px;color:#64748b;">Admin</span>
+        </div>
+        <p class="subtitle">
+          Internal view of installations and engagement — how many installed, and how many times they opened the widget.
+          Only accessible with your private token.
+        </p>
+      </header>
+
+      <div id="error" class="error" style="display:none;"></div>
+
+      <section class="cards">
+        <div class="card">
+          <h2>Installed Sites</h2>
+          <div id="installedSites" class="value">–</div>
+          <div class="hint">Companies that registered & received embed.</div>
+        </div>
+        <div class="card">
+          <h2>Total Widget Opens</h2>
+          <div id="totalOpens" class="value">–</div>
+          <div class="hint">How many times the widget was opened (all sites).</div>
+        </div>
+      </section>
+
+      <section class="card table-card">
+        <div class="table-header">
+          <h2>Widget Opens per Site</h2>
+          <span class="tag">Engagement · read-only</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:55%;">Domain (site_id)</th>
+                <th style="width:20%;">Opens</th>
+                <th style="width:25%;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="sitesTableBody">
+              <tr>
+                <td colspan="3" style="text-align:center;padding:16px;">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="status" class="status">
+          Loading stats…
+        </div>
+
+        <div class="token-hint">
+          Tip: open this page like
+          <code>?token=YOUR_SECRET_TOKEN</code>
+          and share the full URL only with people you trust.
+        </div>
+
+      </section>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // MUST match your production API domain
+      var API_BASE = "https://pulse-api.anna-fokidou.workers.dev";
+
+      var params = new URLSearchParams(window.location.search);
+      var token = params.get("token");
+
+      var errorEl = document.getElementById("error");
+      var installedSitesEl = document.getElementById("installedSites");
+      var totalOpensEl = document.getElementById("totalOpens");
+      var tableBodyEl = document.getElementById("sitesTableBody");
+      var statusEl = document.getElementById("status");
+
+      function showError(msg) {
+        errorEl.style.display = "block";
+        errorEl.textContent = msg;
+      }
+
+      if (!token) {
+        showError("Missing admin token in URL. Open this page as: ?token=YOUR_SECRET_TOKEN");
+        statusEl.textContent = "No token provided.";
+        tableBodyEl.innerHTML =
+          '<tr><td colspan="3" style="text-align:center;padding:16px;">No data.</td></tr>';
+        return;
+      }
+
+      fetch(API_BASE + "/admin/stats?token=" + encodeURIComponent(token))
+        .then(function (res) {
+          if (res.status === 401) throw new Error("Unauthorized — check your admin token.");
+          if (!res.ok) throw new Error("Request failed with status " + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          errorEl.style.display = "none";
+
+          var installed = data.installedSites ?? 0;
+          var rows = data.widgetOpens || [];
+
+          installedSitesEl.textContent = installed;
+
+          var totalOpens = rows.reduce(function (sum, r) {
+            return sum + (parseInt(r.opens, 10) || 0);
+          }, 0);
+
+          totalOpensEl.textContent = totalOpens;
+
+          if (!rows.length) {
+            tableBodyEl.innerHTML =
+              '<tr><td colspan="3" style="text-align:center;padding:16px;">No registrations yet.</td></tr>';
+            statusEl.innerHTML = "Waiting for first installations.";
+            return;
+          }
+
+          tableBodyEl.innerHTML = rows.map(function (r) {
+            var domain = r.domain || "(no domain)";
+            var opens = r.opens ?? 0;
+            var status = opens > 0 ? "Engaged" : "Installed only";
+            return (
+              "<tr>" +
+                '<td class="site-id">' + domain + "</td>" +
+                '<td class="views">' + opens + "</td>" +
+                "<td>" + status + "</td>" +
+              "</tr>"
+            );
+          }).join("");
+
+          statusEl.innerHTML =
+            "<strong>" + installed + "</strong> installed · " +
+            "<strong>" + totalOpens + "</strong> widget opens.";
+        })
+        .catch(function (err) {
+          showError(err.message || "Failed to load admin stats.");
+          statusEl.textContent = "Error loading stats.";
+          tableBodyEl.innerHTML =
+            '<tr><td colspan="3" style="text-align:center;padding:16px;">Error.</td></tr>';
+        });
+    })();
+  </script>
+</body>
+</html>

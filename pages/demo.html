@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMAart View — Live Demo</title>
+
+  <!-- Open Graph / Social Preview -->
+  <meta property="og:title" content="SMAart View — Live Demo" />
+  <meta property="og:description" content="Preview how the widget looks inside a real listing page — clean, simple, and analytics-ready." />
+  <meta property="og:image" content="https://view.smaart-app.com/static/og-smaart-view.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://view.smaart-app.com/demo.html" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SMAart View — Live Demo" />
+  <meta name="twitter:description" content="Preview how the widget looks inside a real listing page — clean, simple, and analytics-ready." />
+  <meta name="twitter:image" content="https://view.smaart-app.com/static/og-smaart-view.png" />
+
+  <link rel="icon" type="image/png" sizes="16x16" href="static/icon-house-16.png?v=4">
+  <link rel="icon" type="image/png" sizes="32x32" href="static/icon-house-32.png?v=4">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=999" />
+</head>
+
+<body>
+
+  <div class="demo-label">DEMO — Not a real listing</div>
+
+  <section class="demo-hero">
+    <h1 class="hero-title">
+      <span class="logo-line">
+        <span class="logo-primary">SMAart</span>
+        <span class="logo-sub">View</span>
+      </span>
+
+      <span class="demo-line">Live Demo</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Preview how the widget looks inside a real listing page — clean, simple, and analytics-ready.
+    </p>
+  </section>
+
+  <!-- LISTING WRAPPER -->
+  <section class="listing-wrapper centered-listing">
+    <div class="listing-inner">
+
+      <div class="photo"
+        style="background-image:url('https://images.unsplash.com/photo-1527030280862-64139fba04ca?auto=format&fit=crop&w=1600&q=80');">
+      </div>
+
+      <div class="details">
+        <div class="title">Contemporary Apartment in Barcelona</div>
+        <div class="price">€320,000</div>
+        <div class="specs">82 m² • 2 Bedrooms • 1 Bathroom • 4th Floor</div>
+
+        <div class="description">
+          Bright, modern apartment located in the heart of Barcelona’s Eixample district —
+          close to cafés, transport, and city hotspots.
+        </div>
+      </div>
+
+      <div id="pulse-widget" class="demo-widget"></div>
+
+    </div>
+  </section>
+
+  <script src="widget.js?v=1"></script>
+
+  <footer class="footer">
+    SMAart-app.com © 2026 • Demo Listing
+  </footer>
+
+  <!-- TRACKING — SURGICAL, SAFE -->
+  <script>
+  (function(){
+    const API = "https://pulse-api.anna-fokidou.workers.dev/events";
+    try {
+      fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          site_id: "self",
+          event_type: "page_view",
+          page_path: "/demo",
+          listing_id: "",
+          area: "demo"
+        })
+      }).catch(()=>{});
+    } catch(e){}
+  })();
+  </script>
+
+</body>
+</html>

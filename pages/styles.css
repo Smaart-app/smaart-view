@@ -1,0 +1,363 @@
+/* ================================
+   SMAart View — Global Styles
+   Brand-safe, no font changes
+   ================================ */
+
+:root {
+  --blue: #005FF9;
+  --dark: #0f172a;
+  --light: #ffffff;
+  --gray-600: #475569;
+  --gray-500: #64748b;
+  --gray-200: #e2e8f0;
+  --gray-100: #f1f5f9;
+  --card-shadow: 0 14px 36px rgba(15,23,42,0.12);
+}
+
+/* GLOBAL */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--light);
+  color: var(--dark);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* HERO (Index + Demo) */
+.hero,
+.demo-hero {
+  padding: 80px 20px 42px;
+  text-align: center;
+}
+
+.demo-hero {
+  padding: 60px 20px 20px;
+  background: linear-gradient(180deg, rgba(0,95,249,0.06) 0%, #fff 45%);
+}
+
+.hero-title {
+  margin: 0 0 10px;
+  font-size: 48px;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+}
+
+.logo-primary {
+  font-family: Montserrat, system-ui;
+  font-weight: 600;
+  color: #000;
+}
+
+.logo-sub {
+  font-family: Inter, system-ui;
+  font-weight: 500;
+  color: var(--blue);
+  letter-spacing: 0.003em;
+}
+
+.demo-line {
+  margin-top: 6px;
+  font-family: Inter, system-ui;
+  font-weight: 500;
+  color: var(--blue);
+  font-size: calc(48px * 0.80);
+  line-height: 1.1;
+}
+
+.hero-subtitle {
+  margin: 0 auto;
+  max-width: 650px;
+  font-size: 20px;
+  line-height: 1.55;
+  opacity: 0.86;
+}
+
+/* CONTENT SECTIONS */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+  padding: 40px 16px 100px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.card {
+  padding: 28px 28px 30px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--card-shadow);
+}
+
+.card h2 {
+  margin: 0 0 10px;
+  font-family: Montserrat;
+  font-size: 24px;
+  line-height: 1.3;
+}
+
+.card p {
+  margin: 0 0 18px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--gray-600);
+}
+
+.link-primary {
+  color: var(--blue);
+  font-weight: 500;
+  text-decoration: none;
+}
+.link-primary:hover { text-decoration: underline; }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 42px 16px 80px;
+  font-size: 14px;
+  opacity: 0.58;
+}
+
+/* ================================
+   FORM STYLES (Get-Code form)
+   EXACTLY as in your beautiful layout
+   ================================ */
+
+.container {
+  max-width: 720px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.form-card {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 18px;
+  padding: 32px;
+  margin-top: 32px;
+  box-shadow: var(--card-shadow);
+}
+
+.form-field {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--gray-600);
+}
+
+.form-field input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 1px solid var(--gray-200);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.18s ease;
+}
+
+.form-field input:focus {
+  border-color: var(--blue);
+}
+
+.btn {
+  width: 100%;
+  background: var(--blue);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: 0.18s ease;
+}
+
+.btn:hover {
+  opacity: 0.92;
+}
+
+.success-card {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 18px;
+  padding: 32px;
+  margin-top: 32px;
+  box-shadow: var(--card-shadow);
+}
+
+pre#embedCode {
+  background: #f8fafc;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid #dde3ea;
+  white-space: pre-wrap;
+  font-family: SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+}
+
+/* ================================
+   DEMO PAGE — LISTING LAYOUT
+   (photo + centered card + widget)
+   ================================ */
+
+/* DEMO pill label */
+.demo-label {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 12px 28px rgba(0, 95, 249, 0.45);
+  z-index: 50;
+}
+
+/* Outer wrapper so η αγγελία να είναι κεντραρισμένη στη σελίδα */
+.listing-wrapper {
+  padding: 40px 16px 56px;
+}
+
+.centered-listing {
+  display: flex;
+  justify-content: center;
+}
+
+/* Κεντρική κάρτα αγγελίας */
+.listing-inner {
+  position: relative;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto 60px;
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+/* Φωτογραφία — δίνουμε ύψος και full-width cover */
+.photo {
+  width: 100%;
+  height: 460px;          /* σταθερό, όπως στο screenshot */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Ζώνη κειμένου */
+.details {
+  padding: 32px 44px 40px;
+}
+
+/* Τίτλοι & κείμενο αγγελίας */
+.details .title {
+  font-family: Montserrat, system-ui;
+  font-size: 32px;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+
+.details .price {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--blue);
+  margin-bottom: 8px;
+}
+
+.details .specs {
+  font-size: 16px;
+  color: var(--gray-600);
+  margin-bottom: 20px;
+}
+
+.details .description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-600);
+  max-width: 700px;
+}
+
+/* Demo widget — floating bottom-right, όπως στο layout */
+.demo-widget {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  z-index: 60;
+}
+
+/* ================================
+   RESPONSIVE ADJUSTMENTS
+   ================================ */
+
+@media (max-width: 900px) {
+  .hero-title {
+    font-size: 40px;
+  }
+
+  .demo-line {
+    font-size: 30px;
+  }
+
+  .listing-inner {
+    border-radius: 24px;
+    margin-bottom: 48px;
+  }
+
+  .photo {
+    height: 320px;
+  }
+
+  .details {
+    padding: 24px 22px 30px;
+  }
+
+  .details .title {
+    font-size: 26px;
+  }
+
+  .details .price {
+    font-size: 20px;
+  }
+
+  .demo-widget {
+    right: 18px;
+    bottom: 22px;
+  }
+}
+
+@media (max-width: 600px) {
+  .photo {
+    height: 260px;
+  }
+
+  .demo-label {
+    top: 12px;
+    left: 12px;
+    padding-inline: 14px;
+    font-size: 13px;
+  }
+}

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMAart View — Free Real Estate Insights Widget</title>
+
+  <!-- Open Graph / Social Preview -->
+  <meta property="og:title" content="SMAart View — Free Real Estate Insights Widget" />
+  <meta property="og:description" content="Free real-estate insights widget — no cookies, no logins, no dashboards. A tiny card that shows what your visitors truly notice." />
+  <meta property="og:image" content="https://view.smaart-app.com/static/og-smaart-view.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://view.smaart-app.com/" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SMAart View — Free Real Estate Insights Widget" />
+  <meta name="twitter:description" content="Free real-estate insights widget — no cookies, no logins, no dashboards. A tiny card that shows what your visitors truly notice." />
+  <meta name="twitter:image" content="https://view.smaart-app.com/static/og-smaart-view.png" />
+
+  <link rel="icon" type="image/png" sizes="16x16" href="static/icon-house-16.png?v=4">
+  <link rel="icon" type="image/png" sizes="32x32" href="static/icon-house-32.png?v=4">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=6" />
+</head>
+
+<body>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+
+    <h1 class="hero-title">
+      <span class="logo-line">
+        <span class="logo-primary">SMAart</span>
+        <span class="logo-sub">View</span>
+      </span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Free real-estate insights widget — no cookies, no logins, no dashboards.  
+      A tiny card that shows what your visitors truly notice.
+    </p>
+
+    <!-- CTA BUTTON -->
+    <div class="hero-cta">
+      <a href="get-code.html" class="cta-button">Get your free embed code →</a>
+    </div>
+
+  </section>
+
+  <!-- MAIN SECTION -->
+  <section class="section">
+
+    <!-- WHAT IT SHOWS -->
+    <div class="card">
+      <h2>What it shows</h2>
+      <p>A tiny but powerful snapshot of your listing activity:</p>
+      <ul class="benefits-list">
+        <li><strong>Views</strong> — How many people looked at your listings.</li>
+        <li><strong>Top listing</strong> — Which property got the most clicks.</li>
+        <li><strong>Top area</strong> — Where demand quietly builds up.</li>
+        <li><strong>Live pulse</strong> — Animated trend reacting to real activity.</li>
+        <li><strong>GDPR-safe</strong> — 100% anonymous. No cookies. No tracking scripts.</li>
+      </ul>
+    </div>
+
+    <!-- HOW IT WORKS (EUROPEAN STYLE) -->
+    <div class="card">
+      <h2>How it works</h2>
+
+      <p>
+        SMAart View is designed for real estate professionals —
+        not for developers.
+      </p>
+
+      <p>Using it is straightforward:</p>
+
+      <ol class="benefits-list">
+        <li>Request your free embed code</li>
+        <li>Tell us which website you want to use it on</li>
+        <li>Receive one small piece of code</li>
+        <li>Share it with the person who manages your website</li>
+      </ol>
+
+      <p>
+        There is nothing to install and nothing to configure on your side.
+        Once the code is added, the widget works automatically.
+      </p>
+
+      <p>
+        If your website is managed by someone else,
+        this is the intended workflow.
+      </p>
+    </div>
+
+    <!-- DEMO LINK -->
+    <div class="card">
+      <p>
+        Want to see it live?
+        <a class="link-primary" href="demo.html?v=6">Open the interactive demo →</a>
+      </p>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    SMAart-app.com © 2026 • Free version
+  </footer>
+
+  <!-- INLINE STYLES (CTA ONLY) -->
+  <style>
+    .hero-cta {
+      margin-top: 28px;
+      text-align: center;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: #005FF9;
+      color: white;
+      padding: 12px 26px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 10px 24px rgba(0, 95, 249, 0.18);
+      transition: background 0.18s ease;
+    }
+
+    .cta-button:hover {
+      background: #004bd1;
+    }
+  </style>
+
+  <!-- TRACKING — SURGICAL, SAFE, NON-BLOCKING -->
+  <script>
+  (function(){
+    const API = "https://pulse-api.anna-fokidou.workers.dev/events";
+
+    function send(payload){
+      try {
+        fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).catch(()=>{});
+      } catch(e){}
+    }
+
+    // Page view — HOME
+    send({
+      site_id: "self",
+      event_type: "page_view",
+      page_path: "/",
+      listing_id: "",
+      area: "home"
+    });
+
+    // CTA click — Get Code
+    const cta = document.querySelector(".cta-button");
+    if (cta) {
+      cta.addEventListener("click", () => {
+        send({
+          site_id: "self",
+          event_type: "click",
+          page_path: "/",
+          listing_id: "cta_get_code",
+          area: "home"
+        });
+      });
+    }
+
+    // Open demo link
+    document.querySelectorAll('a[href^="demo"]').forEach(link => {
+      link.addEventListener("click", () => {
+        send({
+          site_id: "self",
+          event_type: "click",
+          page_path: "/",
+          listing_id: "open_demo",
+          area: "home"
+        });
+      });
+    });
+  })();
+  </script>
+
+</body>
+</html>
