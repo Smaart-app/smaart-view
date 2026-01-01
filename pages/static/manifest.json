@@ -1,0 +1,53 @@
+{
+  "name": "SMAart Pulse",
+  "short_name": "SMAartPulse",
+  "description": "Free real-estate insights widget — no cookies, no logins, no dashboards.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#007BFF",
+  "icons": [
+    {
+      "src": "/static/icon-house-16.png?v=3",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icon-house-32.png?v=3",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icon-house-48.png?v=3",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icon-house-64.png?v=3",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icon-house-128.png?v=3",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icon-house-180.png?v=3",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icon-house-192.png?v=3",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icon-house-512.png?v=3",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
