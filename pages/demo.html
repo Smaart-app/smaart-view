@@ -38,7 +38,6 @@
         <span class="logo-primary">SMAart</span>
         <span class="logo-sub">View</span>
       </span>
-
       <span class="demo-line">Live Demo</span>
     </h1>
 
@@ -51,7 +50,8 @@
   <section class="listing-wrapper centered-listing">
     <div class="listing-inner">
 
-      <div class="photo"
+      <div
+        class="photo"
         style="background-image:url('https://images.unsplash.com/photo-1527030280862-64139fba04ca?auto=format&fit=crop&w=1600&q=80');">
       </div>
 
@@ -66,12 +66,17 @@
         </div>
       </div>
 
+      <!-- WIDGET CONTAINER -->
       <div id="pulse-widget" class="demo-widget"></div>
 
     </div>
   </section>
 
-  <script src="widget.js?v=1"></script>
+  <!-- ✅ REAL WIDGET — SERVED FROM WORKER -->
+  <script
+    src="https://pulse-api.anna-fokidou.workers.dev/widget.js"
+    data-site="demo-site">
+  </script>
 
   <footer class="footer">
     SMAart-app.com © 2026 • Demo Listing
@@ -86,7 +91,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          site_id: "self",
+          site_id: "demo-site",
           event_type: "page_view",
           page_path: "/demo",
           listing_id: "",

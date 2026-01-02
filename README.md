@@ -1,54 +1,87 @@
 # SMAart View
 
-SMAart View is a free, privacy-first analytics widget for real estate websites.
+SMAart View is a privacy-first analytics widget for real estate websites.
 
-It shows simple, aggregated visitor insights (views, interest signals) directly on the site —  
-without cookies, without user tracking, and without third-party analytics tools.
+It provides simple, aggregated visitor insights (views, attention signals) **directly on the website** —  
+without cookies, without user tracking, and without third-party analytics platforms.
 
-Production runs on Cloudflare.
-This repository is the source-of-truth backup and documentation of the widget.
+SMAart View is designed as the **entry module** of the broader SMAart ecosystem and is currently available as a free, controlled-access widget.
+
+Production runs on **Cloudflare**.  
+This repository serves as the **architectural reference, backup, and documentation source**.
 
 ---
 
 ## Project Structure
 
 /pages
-├─ index.html # Landing / demo page
-├─ demo.html # Demo usage of the widget
-├─ admin.html # Internal admin / stats page
+├─ index.html # Landing page
+├─ demo.html # Public demo (real integration example)
 ├─ get-code.html # Embed code generator / onboarding
+├─ admin.html # Internal admin & debug view (not public product)
 ├─ styles.css # Shared styles
-└─ static/ # Assets (icons, images, etc.)
+└─ static/ # Assets (icons, images, OG assets)
 
 /worker
-├─ worker.js # Cloudflare Worker (API, events, stats)
+├─ worker.js # Cloudflare Worker (API, events, aggregation)
 └─ widget.js # Embed script loaded on external websites
 
 ---
 
 ## Architecture Overview
 
-- **Cloudflare**  
-  Runs the production environment:
-  - Cloudflare Worker (API & logic)
-  - Widget script delivery
-  - Event collection and aggregation
+### Cloudflare (Production Runtime)
 
-- **GitHub (this repository)**  
-  Acts as:
-  - Source-of-truth backup
-  - Version history
-  - Documentation
-  - Rollback & recovery point
+Cloudflare hosts and runs the live system:
+
+- **Cloudflare Pages**  
+  Serves the public, static surfaces (landing, demo, onboarding).
+
+- **Cloudflare Worker**  
+  Handles:
+  - Widget delivery
+  - Event ingestion
+  - Aggregation logic
+  - Internal admin endpoints
+
+The Worker is the **runtime source of truth** for all live data and behavior.
+
+---
+
+### GitHub Repository (This Repo)
+
+This repository acts as:
+
+- Architectural reference
+- Version history
+- Documentation
+- Manual backup & recovery point
 
 There is **no automatic deployment** from GitHub to Cloudflare.
-All production changes are deployed manually in Cloudflare and then mirrored here.
+
+All production changes are:
+1. Deployed manually in Cloudflare  
+2. Then mirrored here to keep the repository in sync
+
+This separation is intentional and ensures operational safety.
+
+---
+
+## Admin & Debug Views
+
+`admin.html` is an **internal tool** intended exclusively for:
+
+- Creator / operator visibility
+- Debugging and verification
+- System validation
+
+It is **not** part of the public product offering and should not be exposed to end users.
 
 ---
 
 ## Privacy & GDPR
 
-SMAart View is designed to be fully privacy-first:
+SMAart View is designed to be fully privacy-first by default:
 
 - No cookies
 - No IP storage
@@ -56,18 +89,17 @@ SMAart View is designed to be fully privacy-first:
 - No cross-site tracking
 - Only anonymous, aggregated events
 
-The widget is safe to embed without consent banners or third-party analytics policies.
+The widget can be embedded without consent banners or third-party analytics disclosures.
 
 ---
 
 ## Notes
 
 - This repository does **not** power GitHub Pages.
-- It is intentionally decoupled from deployment.
-- The goal is stability, transparency, and long-term maintainability.
+- It is intentionally decoupled from automated deployment.
+- The architecture prioritizes stability, clarity, and long-term maintainability.
 
 ---
 
-© SMAart — Real estate insights, without surveillance.
-# smaart-view
-Codebase for the SMAart View widget — a free, privacy-first analytics widget for real estate websites.
+© SMAart  
+Real estate insights — without surveillance.

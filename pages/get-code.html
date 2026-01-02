@@ -96,7 +96,7 @@
 
       <p style="margin-top:20px;">
         Want to see how it looks?
-        <a id="openDemoLink" href="demo.html?v=8" class="link-primary">Open the interactive demo →</a>
+        <a href="demo.html?v=8" class="link-primary">Open the interactive demo →</a>
       </p>
     </div>
 
@@ -112,7 +112,6 @@
     const embedCodeEl = document.getElementById("embedCode");
     const copyBtn = document.getElementById("copyBtn");
     const copyStatus = document.getElementById("copyStatus");
-    const openDemoLink = document.getElementById("openDemoLink");
 
     function sendEvent(payload) {
       try {
@@ -127,7 +126,7 @@
     sendEvent({
       site_id: "self",
       event_type: "page_view",
-      page_path: window.location.pathname || "/get-code",
+      page_path: "/get-code",
       listing_id: "",
       area: "get-code"
     });
@@ -142,14 +141,6 @@
 
     btn.addEventListener("click", async () => {
       if (btn.disabled) return;
-
-      sendEvent({
-        site_id: "self",
-        event_type: "click",
-        page_path: window.location.pathname || "/get-code",
-        listing_id: "generate_embed",
-        area: "get-code"
-      });
 
       const first = document.getElementById("firstName").value.trim();
       const last = document.getElementById("lastName").value.trim();
@@ -178,20 +169,12 @@
         });
 
         embedCodeEl.textContent =
-          '<script src="https://pulse-api.anna-fokidou.workers.dev/widget.js" data-site-id="' +
+          '<script src="https://pulse-api.anna-fokidou.workers.dev/widget.js" data-site="' +
           domain +
           '"></' + 'script>';
 
         formCard.style.display = "none";
         successCard.style.display = "block";
-
-        sendEvent({
-          site_id: "self",
-          event_type: "success",
-          page_path: window.location.pathname || "/get-code",
-          listing_id: "embed_generated",
-          area: "get-code"
-        });
 
       } catch {
         alert("Something went wrong. Please try again.");
