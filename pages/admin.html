@@ -8,88 +8,80 @@
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
   />
+
   <style>
     :root {
-      --sp-blue: #007BFF;
-      --sp-bg: #f1f5f9;
-      --sp-card-bg: #ffffff;
-      --sp-text: #0f172a;
+      --blue: #007BFF;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      padding: 0;
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: Inter, system-ui, sans-serif;
       background: radial-gradient(circle at top, #e0f2fe 0, #eef2ff 40%, #f8fafc 100%);
-      color: var(--sp-text);
+      color: var(--text);
     }
 
     .page {
       min-height: 100vh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
       padding: 40px 16px;
+      display: flex;
+      justify-content: center;
     }
 
     .wrap {
       width: 100%;
-      max-width: 960px;
+      max-width: 1100px;
     }
 
-    .header {
-      margin-bottom: 24px;
+    header {
+      margin-bottom: 28px;
     }
 
-    .title {
+    h1 {
+      margin: 0;
       font-size: 28px;
       font-weight: 600;
       letter-spacing: -0.03em;
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
     }
 
-    .title span:first-child {
-      color: #000000;
-    }
-
-    .title span:nth-child(2) {
-      color: var(--sp-blue);
+    h1 span {
+      color: var(--blue);
     }
 
     .subtitle {
       margin-top: 6px;
       font-size: 14px;
-      color: #64748b;
+      color: var(--muted);
     }
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
 
     .card {
-      background: var(--sp-card-bg);
+      background: var(--card);
       border-radius: 16px;
       padding: 16px 18px;
-      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 40px rgba(15,23,42,.12);
     }
 
-    .card h2 {
+    .card h3 {
       margin: 0 0 6px;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.05em;
+      font-size: 12px;
       text-transform: uppercase;
-      color: #64748b;
+      letter-spacing: .08em;
+      color: var(--muted);
     }
 
     .card .value {
@@ -97,120 +89,55 @@
       font-weight: 600;
     }
 
-    .card .hint {
-      margin-top: 4px;
-      font-size: 12px;
-      color: #94a3b8;
-    }
-
-    .table-card {
-      margin-top: 8px;
-    }
-
-    .table-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .table-header h2 {
-      margin: 0;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid #c4b5fd;
-      background: #eef2ff;
-      color: #4c1d95;
-    }
-
-    .table-wrap {
-      max-height: 420px;
-      overflow: auto;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-      background: #ffffff;
-    }
-
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
     }
 
     thead {
-      background: #f8fafc;
-      position: sticky;
-      top: 0;
-      z-index: 1;
+      background: #f1f5f9;
     }
 
     th, td {
-      padding: 8px 10px;
+      padding: 10px 12px;
       text-align: left;
-      border-bottom: 1px solid #e2e8f0;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
 
     th {
-      font-weight: 500;
-      color: #64748b;
       font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
     }
 
-    tbody tr:nth-child(even) td {
+    tbody tr:nth-child(even) {
       background: #f9fafb;
     }
 
-    .site-id {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 12px;
-    }
-
-    .views {
-      text-align: right;
-      font-weight: 600;
     }
 
     .status {
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .green { color: #16a34a; }
+    .yellow { color: #ca8a04; }
+    .red { color: #dc2626; }
+
+    .footer {
+      margin-top: 14px;
       font-size: 12px;
-      margin-top: 6px;
-      color: #64748b;
-    }
-
-    .status strong {
-      color: #0f172a;
-    }
-
-    .error {
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #b91c1c;
-      font-size: 13px;
-      margin-bottom: 12px;
-    }
-
-    .token-hint {
-      margin-top: 4px;
-      font-size: 12px;
-      color: #94a3b8;
-    }
-
-    @media (max-width: 640px) {
-      .page {
-        padding: 24px 12px;
-      }
-      .title {
-        font-size: 22px;
-      }
+      color: var(--muted);
     }
   </style>
 </head>
@@ -219,150 +146,88 @@
   <div class="page">
     <div class="wrap">
 
-      <header class="header">
-        <div class="title">
-          <span>SMAart</span>
-          <span>View</span>
-          <span style="font-size:13px;color:#64748b;">Admin</span>
+      <header>
+        <h1>SMAart <span>View</span> — Admin</h1>
+        <div class="subtitle">
+          Internal lifecycle & usage overview (read-only).
         </div>
-        <p class="subtitle">
-          Internal view of widget usage — total views and views per site.  
-          Only accessible with your private token.
-        </p>
       </header>
-
-      <div id="error" class="error" style="display:none;"></div>
 
       <section class="cards">
         <div class="card">
-          <h2>Total Views</h2>
-          <div id="totalViews" class="value">–</div>
-          <div class="hint">All recorded widget views (all sites).</div>
+          <h3>Total Sites</h3>
+          <div id="totalSites" class="value">–</div>
         </div>
         <div class="card">
-          <h2>Active Sites</h2>
-          <div id="totalSites" class="value">–</div>
-          <div class="hint">Sites that have sent at least one view.</div>
+          <h3>Active (last 3 days)</h3>
+          <div id="activeSites" class="value">–</div>
         </div>
       </section>
 
-      <section class="card table-card">
-        <div class="table-header">
-          <h2>Views per Site</h2>
-          <span class="tag">Live usage · read-only</span>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:40%;">Site ID</th>
-                <th style="width:25%;">Views (total)</th>
-                <th style="width:35%;">Notes</th>
-              </tr>
-            </thead>
-            <tbody id="sitesTableBody">
-              <tr>
-                <td colspan="3" style="text-align:center;padding:16px;">Loading…</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div id="status" class="status">
-          Loading stats…
-        </div>
-
-        <div class="token-hint">
-          Tip: open this page like  
-          <code>?token=YOUR_SECRET_TOKEN</code>  
-          and share the full URL only with people you trust.
-        </div>
-
+      <section>
+        <table>
+          <thead>
+            <tr>
+              <th>Site ID</th>
+              <th>Active days</th>
+              <th>Widget opens</th>
+              <th>Last seen</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="5">Loading…</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
+
+      <div class="footer">
+        SMAart View · internal admin · no cookies · no users
+      </div>
+
     </div>
   </div>
 
   <script>
-    (function () {
-      var API_BASE = "https://pulse-api.anna-fokidou.workers.dev";
+    const API = "https://pulse-api.anna-fokidou.workers.dev";
 
-      var params = new URLSearchParams(window.location.search);
-      var token = params.get("token");
+    fetch(API + "/admin/lifecycle")
+      .then(r => r.json())
+      .then(data => {
+        const sites = data.sites || [];
+        const tbody = document.getElementById("tableBody");
 
-      var errorEl = document.getElementById("error");
-      var totalViewsEl = document.getElementById("totalViews");
-      var totalSitesEl = document.getElementById("totalSites");
-      var tableBodyEl = document.getElementById("sitesTableBody");
-      var statusEl = document.getElementById("status");
+        document.getElementById("totalSites").textContent = sites.length;
+        document.getElementById("activeSites").textContent =
+          sites.filter(s => s.status === "green").length;
 
-      function showError(msg) {
-        errorEl.style.display = "block";
-        errorEl.textContent = msg;
-      }
+        if (!sites.length) {
+          tbody.innerHTML =
+            "<tr><td colspan='5'>No data yet.</td></tr>";
+          return;
+        }
 
-      if (!token) {
-        showError("Missing admin token in URL. Open this page as: ?token=YOUR_SECRET_TOKEN");
-        statusEl.textContent = "No token provided.";
-        tableBodyEl.innerHTML =
-          '<tr><td colspan="3" style="text-align:center;padding:16px;">No data.</td></tr>';
-        return;
-      }
+        tbody.innerHTML = "";
 
-      fetch(API_BASE + "/admin/stats?token=" + encodeURIComponent(token))
-        .then(function (res) {
-          if (res.status === 401) {
-            throw new Error("Unauthorized — check your admin token.");
-          }
-          if (!res.ok) {
-            throw new Error("Request failed with status " + res.status);
-          }
-          return res.json();
-        })
-        .then(function (data) {
-          errorEl.style.display = "none";
-
-          totalViewsEl.textContent = data.totalViews ?? 0;
-          totalSitesEl.textContent = data.totalSites ?? 0;
-
-          var sites = data.sites || [];
-          if (!sites.length) {
-            tableBodyEl.innerHTML =
-              '<tr><td colspan="3" style="text-align:center;padding:16px;">No sites have sent views yet.</td></tr>';
-            statusEl.innerHTML =
-              "Waiting for first widgets to send traffic. Install the widget on a site and refresh.";
-            return;
-          }
-
-          var rowsHtml = sites
-            .map(function (row) {
-              var id = row.site_id || "(no site_id)";
-              var views = row.views ?? 0;
-              var note = views === 0 ? "Installed, no traffic yet" : "Active";
-              return (
-                "<tr>" +
-                  '<td class="site-id">' + id + "</td>" +
-                  '<td class="views">' + views + "</td>" +
-                  "<td>" + note + "</td>" +
-                "</tr>"
-              );
-            })
-            .join("");
-
-          tableBodyEl.innerHTML = rowsHtml;
-
-          statusEl.innerHTML =
-            "<strong>" + sites.length + "</strong> site(s) reporting · " +
-            "<strong>" + (data.totalViews ?? 0) + "</strong> total views.";
-        })
-        .catch(function (err) {
-          showError(err.message || "Failed to load admin stats.");
-          statusEl.textContent = "Error loading stats.";
-          tableBodyEl.innerHTML =
-            '<tr><td colspan="3" style="text-align:center;padding:16px;">Error.</td></tr>';
+        sites.forEach(site => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="mono">${site.site_id}</td>
+            <td>${site.active_days_count}</td>
+            <td>${site.widget_open_days_count}</td>
+            <td class="mono">${site.last_seen_at || "—"}</td>
+            <td class="status ${site.status}">${site.status}</td>
+          `;
+          tbody.appendChild(tr);
         });
-    })();
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("tableBody").innerHTML =
+          "<tr><td colspan='5'>Failed to load data.</td></tr>";
+      });
   </script>
-
 </body>
 </html>
