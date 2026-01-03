@@ -74,7 +74,7 @@ export default {
     }
 
     // --------------------------------------------------
-    // GET /widget.js  ✅ ΑΥΤΟΥΣΙΟ
+    // GET /widget.js  ✅ FINAL — cache bypass
     // --------------------------------------------------
     if (request.method === "GET" && path === "/widget.js") {
       const js = `
@@ -201,8 +201,15 @@ export default {
   fetchStats().then(s => createWidget(s || {}));
 })();
 `;
+
       return new Response(js, {
-        headers: { "Content-Type": "text/javascript; charset=utf-8", ...cors },
+        headers: {
+          "Content-Type": "text/javascript; charset=utf-8",
+          // 🔒 cache bypass (CRITICAL)
+          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+          "Pragma": "no-cache",
+          ...cors,
+        },
       });
     }
 

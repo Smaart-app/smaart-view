@@ -1,12 +1,12 @@
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
 
     const cors = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Headers": "Content-Type",
     };
 
     if (request.method === "OPTIONS") {
@@ -14,7 +14,7 @@ export default {
     }
 
     // --------------------------------------------------
-    // GET /widget.js  ✅ FINAL (COLLAPSIBLE)
+    // GET /widget.js  (FINAL — compact + calm motion)
     // --------------------------------------------------
     if (request.method === "GET" && path === "/widget.js") {
       const js = `
@@ -31,6 +31,9 @@ export default {
     script.getAttribute("data-api-base") ||
     new URL(script.src).origin;
 
+  const SCALE =
+    parseFloat(script.getAttribute("data-scale")) || 1;
+
   function sendEvent(type) {
     try {
       fetch(API_BASE + "/events", {
@@ -43,7 +46,7 @@ export default {
         }),
         keepalive: true
       }).catch(() => {});
-    } catch (_) {}
+    } catch {}
   }
 
   function fetchStats() {
@@ -93,18 +96,28 @@ export default {
 
     shadow.innerHTML = \`
 <style>
-  :host { all: initial; }
-
   .sp-card {
-    width: 210px;
+    width: 190px;
     background: #fff;
     border-radius: 14px;
-    padding: 14px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 16px 30px rgba(15,23,42,0.14);
-    font-size: 13px;
+    padding: 12px;
+    border: 5px solid red !important;
+    box-shadow: 0 14px 28px rgba(15,23,42,0.14);
+    font-size: 12.5px;
     color: #0f172a;
-    transition: box-shadow .18s ease, transform .18s ease;
+
+    transform: scale(\${SCALE});
+    transform-origin: bottom right;
+
+    transition:
+      max-height .22s cubic-bezier(.4,0,.2,1),
+      opacity .22s ease,
+      transform .22s cubic-bezier(.4,0,.2,1),
+      box-shadow .22s ease;
+  }
+
+  .sp-card.sp-collapsed {
+    transform: scale(\${SCALE}) translateY(4px);
   }
 
   .sp-card.sp-collapsed .sp-body {
@@ -121,13 +134,12 @@ export default {
     cursor: pointer;
     border: none;
     background: transparent;
-    font: inherit;
     width: 100%;
   }
 
   .sp-header-sub {
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14.5px;
     color: #007BFF;
   }
 
@@ -136,18 +148,20 @@ export default {
     height: 7px;
     background: #007BFF;
     border-radius: 999px;
-    animation: sp-pulse 1.6s ease-out infinite;
+    animation: pulse 1.8s ease-out infinite;
   }
 
-  @keyframes sp-pulse {
-    0% { transform: scale(1); opacity: .7; }
-    50% { transform: scale(1.3); opacity: 1; }
-    100% { transform: scale(1); opacity: .7; }
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: .6; }
+    50% { transform: scale(1.25); opacity: 1; }
+    100% { transform: scale(1); opacity: .6; }
   }
 
   .sp-body {
     margin-top: 6px;
-    transition: max-height .18s ease, opacity .18s ease;
+    transition:
+      max-height .22s cubic-bezier(.4,0,.2,1),
+      opacity .22s ease;
   }
 
   .metric-row {
@@ -159,22 +173,22 @@ export default {
   .metric-value {
     justify-self: end;
     font-weight: 500;
-    max-width: 110px;
+    max-width: 100px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .sp-footer {
-    margin-top: 10px;
+    margin-top: 8px;
     text-align: center;
-    font-size: 10.5px;
+    font-size: 10.2px;
     color: #64748b;
   }
 </style>
 
 <div class="sp-card sp-collapsed">
-  <button class="sp-header" type="button" aria-expanded="false">
+  <button class="sp-header" type="button">
     <span class="sp-header-sub">View — Live</span>
     <span class="sp-live-dot"></span>
   </button>
@@ -192,21 +206,11 @@ export default {
 
     let collapsed = true;
 
-    function sync() {
-      card.classList.toggle("sp-collapsed", collapsed);
-      header.setAttribute("aria-expanded", String(!collapsed));
-    }
-
     header.addEventListener("click", () => {
-      const wasCollapsed = collapsed;
       collapsed = !collapsed;
-      sync();
-      if (wasCollapsed && !collapsed) {
-        sendEvent("widget_open");
-      }
+      card.classList.toggle("sp-collapsed", collapsed);
+      if (!collapsed) sendEvent("widget_open");
     });
-
-    sync();
   }
 
   sendEvent("view");
@@ -222,25 +226,15 @@ export default {
     // POST /events
     // --------------------------------------------------
     if (request.method === "POST" && path === "/events") {
-      try {
-        const d = await request.json();
-        await env.DB.prepare(`
-          INSERT INTO events (site_id, event_type, listing_id, area, page_path)
-          VALUES (?, ?, ?, ?, ?)
-        `)
-          .bind(
-            d.site_id || "",
-            d.event_type || "",
-            d.listing_id ?? null,
-            d.area ?? null,
-            d.page_path || ""
-          )
-          .run();
+      const d = await request.json();
+      await env.DB.prepare(`
+        INSERT INTO events (site_id, event_type, listing_id, area, page_path)
+        VALUES (?, ?, ?, ?, ?)
+      `)
+        .bind(d.site_id, d.event_type, d.listing_id ?? null, d.area ?? null, d.page_path || "")
+        .run();
 
-        return Response.json({ success: true }, { headers: cors });
-      } catch {
-        return Response.json({ success: false }, { headers: cors });
-      }
+      return Response.json({ success: true }, { headers: cors });
     }
 
     // --------------------------------------------------
@@ -248,9 +242,6 @@ export default {
     // --------------------------------------------------
     if (request.method === "GET" && path === "/stats") {
       const siteId = url.searchParams.get("site_id");
-      if (!siteId) {
-        return Response.json({ error: "Missing site_id" }, { status: 400, headers: cors });
-      }
 
       const views = await env.DB
         .prepare("SELECT COUNT(*) AS c FROM events WHERE site_id=? AND event_type='view'")
@@ -258,37 +249,20 @@ export default {
         .first();
 
       const topListing = await env.DB
-        .prepare(`
-          SELECT listing_id, COUNT(*) AS c
-          FROM events
-          WHERE site_id=? AND listing_id IS NOT NULL AND listing_id != ''
-          GROUP BY listing_id
-          ORDER BY c DESC
-          LIMIT 1
-        `)
+        .prepare("SELECT listing_id FROM events WHERE site_id=? AND listing_id IS NOT NULL LIMIT 1")
         .bind(siteId)
         .first();
 
       const topArea = await env.DB
-        .prepare(`
-          SELECT area, COUNT(*) AS c
-          FROM events
-          WHERE site_id=? AND area IS NOT NULL AND area != ''
-          GROUP BY area
-          ORDER BY c DESC
-          LIMIT 1
-        `)
+        .prepare("SELECT area FROM events WHERE site_id=? AND area IS NOT NULL LIMIT 1")
         .bind(siteId)
         .first();
 
-      return Response.json(
-        {
-          views: views?.c || 0,
-          topListing: topListing?.listing_id || null,
-          topArea: topArea?.area || null,
-        },
-        { headers: cors }
-      );
+      return Response.json({
+        views: views?.c || 0,
+        topListing: topListing?.listing_id || null,
+        topArea: topArea?.area || null,
+      }, { headers: cors });
     }
 
     return new Response("SMAart View API running", { headers: cors });
