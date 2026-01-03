@@ -3,29 +3,70 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    // -----------------------------
+    // CORS (public widget)
+    // -----------------------------
     const cors = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Headers": "Content-Type",
+    };
+
+    const securityHeaders = {
+      "X-Content-Type-Options": "nosniff",
     };
 
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: cors });
+      return new Response(null, { headers: { ...cors, ...securityHeaders } });
     }
 
     const today = new Date().toISOString().slice(0, 10);
 
+    // -----------------------------
+    // Small helpers
+    // -----------------------------
+    const json = (data, init = {}) =>
+      Response.json(data, {
+        ...init,
+        headers: { ...cors, ...securityHeaders, ...(init.headers || {}) },
+      });
+
+    function sanitizeText(v, max = 200) {
+      if (v == null) return "";
+      const s = String(v);
+      return s.length > max ? s.slice(0, max) : s;
+    }
+
+    // allow: letters, digits, underscore, dash, dot, colon
+    function isValidSiteId(siteId) {
+      if (!siteId) return false;
+      const s = String(siteId).trim();
+      if (s.length < 1 || s.length > 64) return false;
+      return /^[a-zA-Z0-9_.:-]+$/.test(s);
+    }
+
+    const ALLOWED_EVENT_TYPES = new Set(["view", "widget_open"]);
+
+    async function sha256Base64(input) {
+      const data = new TextEncoder().encode(input);
+      const hash = await crypto.subtle.digest("SHA-256", data);
+      let binary = "";
+      const bytes = new Uint8Array(hash);
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      return btoa(binary);
+    }
+
     // --------------------------------------------------
-    // Lifecycle helper (ΝΕΟ – δεν πειράζει widget)
+    // Lifecycle helper
     // --------------------------------------------------
     async function updateLifecycle(siteId, isWidgetOpen) {
       if (!siteId) return;
 
-      const row = await env.DB
-        .prepare("SELECT * FROM installations WHERE site_id=?")
+      const row = await env.DB.prepare("SELECT * FROM installations WHERE site_id=?")
         .bind(siteId)
         .first();
 
+      // First time we see this site
       if (!row) {
         await env.DB.prepare(`
           INSERT INTO installations
@@ -42,16 +83,14 @@ export default {
         return;
       }
 
-      let activeDays = row.active_days_count;
-      let openDays = row.widget_open_days_count;
+      const prevActiveDays = Number(row.active_days_count || 0);
+      const prevOpenDays = Number(row.widget_open_days_count || 0);
 
-      if (row.last_active_day !== today) {
-        activeDays += 1;
-      }
+      let activeDays = prevActiveDays;
+      let openDays = prevOpenDays;
 
-      if (isWidgetOpen && row.last_open_day !== today) {
-        openDays += 1;
-      }
+      if (row.last_active_day !== today) activeDays += 1;
+      if (isWidgetOpen && row.last_open_day !== today) openDays += 1;
 
       await env.DB.prepare(`
         UPDATE installations
@@ -74,7 +113,7 @@ export default {
     }
 
     // --------------------------------------------------
-    // GET /widget.js  ✅ FINAL — cache bypass
+    // GET /widget.js  ✅ FINAL — cached + ETag
     // --------------------------------------------------
     if (request.method === "GET" && path === "/widget.js") {
       const js = `
@@ -141,7 +180,11 @@ export default {
     const topListing = VALUE(stats?.topListing);
     const topArea = VALUE(stats?.topArea);
 
+    // Avoid duplicates if someone injects twice
+    if (document.querySelector("[data-smaart-view-host='1']")) return;
+
     const host = document.createElement("div");
+    host.setAttribute("data-smaart-view-host", "1");
     host.style.position = "fixed";
     host.style.right = "20px";
     host.style.bottom = "30px";
@@ -154,7 +197,7 @@ export default {
     shadow.innerHTML = \`
 <style>
   :host { all: initial; }
-  .sp-card { width:210px;background:#fff;border-radius:14px;padding:14px;border:1px solid #e2e8f0;
+  .sp-card{width:190px; background:#fff; border-radius:14px; padding:12px; border:1px solid #e2e8f0;
     box-shadow:0 16px 30px rgba(15,23,42,.14);font-size:13px;color:#0f172a;}
   .sp-card.sp-collapsed .sp-body {max-height:0;opacity:0;overflow:hidden;}
   .sp-header{display:flex;justify-content:center;align-items:center;gap:6px;cursor:pointer;
@@ -202,13 +245,31 @@ export default {
 })();
 `;
 
+      const etag = `"sha256-${await sha256Base64(js)}"`;
+      const inm = request.headers.get("If-None-Match");
+
+      // 304 if unchanged
+      if (inm && inm === etag) {
+        return new Response(null, {
+          status: 304,
+          headers: {
+            "ETag": etag,
+            // Cache on the edge for 1 hour, serve stale while revalidating for 1 day
+            "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+            "Content-Type": "text/javascript; charset=utf-8",
+            ...cors,
+            ...securityHeaders,
+          },
+        });
+      }
+
       return new Response(js, {
         headers: {
           "Content-Type": "text/javascript; charset=utf-8",
-          // 🔒 cache bypass (CRITICAL)
-          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-          "Pragma": "no-cache",
+          "ETag": etag,
+          "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
           ...cors,
+          ...securityHeaders,
         },
       });
     }
@@ -220,24 +281,38 @@ export default {
       try {
         const d = await request.json();
 
+        const siteId = sanitizeText(d?.site_id, 64).trim();
+        const eventType = sanitizeText(d?.event_type, 40).trim();
+
+        if (!isValidSiteId(siteId)) {
+          return json({ success: false, error: "invalid_site_id" }, { status: 400 });
+        }
+        if (!ALLOWED_EVENT_TYPES.has(eventType)) {
+          return json({ success: false, error: "invalid_event_type" }, { status: 400 });
+        }
+
+        const listingIdRaw = d?.listing_id ?? null;
+        const areaRaw = d?.area ?? null;
+
+        const listing_id =
+          listingIdRaw == null ? null : sanitizeText(listingIdRaw, 120).trim() || null;
+        const area =
+          areaRaw == null ? null : sanitizeText(areaRaw, 120).trim() || null;
+
+        const page_path = sanitizeText(d?.page_path, 200).trim();
+
         await env.DB.prepare(`
           INSERT INTO events (site_id, event_type, listing_id, area, page_path)
           VALUES (?, ?, ?, ?, ?)
         `)
-          .bind(
-            d.site_id || "",
-            d.event_type || "",
-            d.listing_id ?? null,
-            d.area ?? null,
-            d.page_path || ""
-          )
+          .bind(siteId, eventType, listing_id, area, page_path)
           .run();
 
-        await updateLifecycle(d.site_id, d.event_type === "widget_open");
+        await updateLifecycle(siteId, eventType === "widget_open");
 
-        return Response.json({ success: true }, { headers: cors });
+        return json({ success: true });
       } catch {
-        return Response.json({ success: false }, { headers: cors });
+        return json({ success: false }, { status: 200 });
       }
     }
 
@@ -245,9 +320,9 @@ export default {
     // GET /stats
     // --------------------------------------------------
     if (request.method === "GET" && path === "/stats") {
-      const siteId = url.searchParams.get("site_id");
-      if (!siteId) {
-        return Response.json({ error: "Missing site_id" }, { status: 400, headers: cors });
+      const siteId = sanitizeText(url.searchParams.get("site_id"), 64).trim();
+      if (!isValidSiteId(siteId)) {
+        return json({ error: "Missing or invalid site_id" }, { status: 400 });
       }
 
       const views = await env.DB
@@ -279,14 +354,11 @@ export default {
         .bind(siteId)
         .first();
 
-      return Response.json(
-        {
-          views: views?.c || 0,
-          topListing: topListing?.listing_id || null,
-          topArea: topArea?.area || null,
-        },
-        { headers: cors }
-      );
+      return json({
+        views: views?.c || 0,
+        topListing: topListing?.listing_id || null,
+        topArea: topArea?.area || null,
+      });
     }
 
     // --------------------------------------------------
@@ -304,9 +376,11 @@ export default {
         ORDER BY last_seen_at DESC
       `).all();
 
-      return Response.json({ sites: rows.results || [] }, { headers: cors });
+      return json({ sites: rows.results || [] });
     }
 
-    return new Response("SMAart View API running", { headers: cors });
+    return new Response("SMAart View API running", {
+      headers: { ...cors, ...securityHeaders },
+    });
   },
 };
