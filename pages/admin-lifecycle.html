@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SMAart View — Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+  />
+
+  <style>
+    :root {
+      --blue: #007BFF;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --error: #dc2626;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(circle at top, #e0f2fe 0, #eef2ff 40%, #f8fafc 100%);
+      color: var(--text);
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 40px 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    header {
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    h1 span {
+      color: var(--blue);
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .error-box {
+      margin: 16px 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #fee2e2;
+      color: var(--error);
+      font-size: 13px;
+      display: none;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 40px rgba(15,23,42,.12);
+    }
+
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+
+    .card .value {
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    thead {
+      background: #f1f5f9;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .status {
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .green { color: #16a34a; }
+    .yellow { color: #ca8a04; }
+    .red { color: #dc2626; }
+
+    .footer {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="wrap">
+
+      <header>
+        <h1>SMAart <span>View</span> — Admin</h1>
+        <div class="subtitle">
+          Internal lifecycle & usage overview (read-only).
+        </div>
+      </header>
+
+      <div id="errorBox" class="error-box"></div>
+
+      <section class="cards">
+        <div class="card">
+          <h3>Total Sites</h3>
+          <div id="totalSites" class="value">–</div>
+        </div>
+        <div class="card">
+          <h3>Active (last 3 days)</h3>
+          <div id="activeSites" class="value">–</div>
+        </div>
+      </section>
+
+      <section>
+        <table>
+          <thead>
+            <tr>
+              <th>Site ID</th>
+              <th>Active days</th>
+              <th>Widget opens</th>
+              <th>Last seen</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="5">Loading…</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="footer">
+        SMAart View · internal admin · no cookies · no users
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API = "https://pulse-api.anna-fokidou.workers.dev";
+
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    const errorBox = document.getElementById("errorBox");
+
+    if (!token) {
+      errorBox.textContent = "Missing ?token in URL.";
+      errorBox.style.display = "block";
+      throw new Error("Missing token");
+    }
+
+    fetch(`${API}/admin/lifecycle?token=${encodeURIComponent(token)}`)
+      .then(r => {
+        if (!r.ok) {
+          return r.text().then(t => {
+            throw new Error(`API error ${r.status}: ${t}`);
+          });
+        }
+        return r.json();
+      })
+      .then(data => {
+        const sites = data.sites || [];
+        const tbody = document.getElementById("tableBody");
+
+        document.getElementById("totalSites").textContent = sites.length;
+        document.getElementById("activeSites").textContent =
+          sites.filter(s => s.status === "green").length;
+
+        if (!sites.length) {
+          tbody.innerHTML =
+            "<tr><td colspan='5'>No data yet.</td></tr>";
+          return;
+        }
+
+        tbody.innerHTML = "";
+
+        sites.forEach(site => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="mono">${site.site_id}</td>
+            <td>${site.active_days_count}</td>
+            <td>${site.widget_open_days_count}</td>
+            <td class="mono">${site.last_seen_at || "—"}</td>
+            <td class="status ${site.status}">${site.status}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        errorBox.textContent = err.message;
+        errorBox.style.display = "block";
+        document.getElementById("tableBody").innerHTML =
+          "<tr><td colspan='5'>Failed to load data.</td></tr>";
+      });
+  </script>
+</body>
+</html>
